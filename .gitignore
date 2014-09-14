@@ -1,0 +1,3 @@
+.vagrant
+.cabal-sandbox
+dist
