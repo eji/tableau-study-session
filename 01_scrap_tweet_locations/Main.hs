@@ -15,11 +15,11 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Resource (runResourceT)
 import Data.Aeson
 import Data.Aeson.Parser
-import Data.Aeson.Types
 import Data.Conduit
 import Data.Conduit.Attoparsec (sinkParser)
 import LoadEnv
 import Network.HTTP.Conduit
+import Options.Applicative
 import System.Environment (lookupEnv)
 import System.IO(stdout)
 import Web.Authenticate.OAuth
@@ -35,6 +35,24 @@ type Message = T.Text
 type Latitude = Double
 type Longitude = Double
 
+{- オプション -}
+data Options = Options { _query :: String }
+  deriving (Eq, Show)
+
+options :: Parser Options
+options = Options
+  <$> strOption (short 'q' <> long "query" <> metavar "QUERY" <> help "検索するタグ名")
+
+opts :: ParserInfo Options
+opts =
+  info
+    (helper <*> options)
+    (
+      fullDesc
+      <> progDesc "出力フォーマット: スクリーン名 メッセージ 投稿日時 緯度 軽度"
+      <> header "ハッシュタグで検索されたGeoタグ付きのツイートを取り出すためのスクリプト"
+    )
+
 main :: IO ()
 main = do
   loadEnv
@@ -44,9 +62,11 @@ main = do
   access_token <- getEnv "TWITTER_OAUTH_ACCESS_TOKEN" toAccessToken
   access_token_secret <- getEnv "TWITTER_OAUTH_ACCESS_TOKEN_SECRET" toAccessTokenSecret
 
+  optsInfo <- execParser opts
+  let query = _query optsInfo
   let oauth = makeOAuth api_key api_secret
   let credential = makeCredential access_token access_token_secret
-  req <- makeRequestTofetchRecentTweetsByHashTag oauth credential "test"
+  req <- makeRequestTofetchRecentTweetsByHashTag oauth credential query
 
   runResourceT $ do
     manager <- liftIO $ newManager conduitManagerSettings

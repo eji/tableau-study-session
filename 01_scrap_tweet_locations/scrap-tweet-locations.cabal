@@ -33,5 +33,6 @@ executable scrap-tweet-locations
                , unordered-containers
                , text
                , vector
+               , optparse-applicative
   -- hs-source-dirs:      
   default-language:    Haskell2010
