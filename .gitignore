@@ -1,3 +1,4 @@
+*.swp
 .vagrant
 .cabal-sandbox
 dist
