@@ -1,4 +1,5 @@
 *.swp
 .vagrant
 .cabal-sandbox
+.env
 dist
