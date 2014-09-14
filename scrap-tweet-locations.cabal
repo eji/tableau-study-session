@@ -28,5 +28,10 @@ executable scrap-tweet-locations
                , http-conduit
                , transformers
                , resourcet
+               , aeson
+               , hashtables
+               , unordered-containers
+               , text
+               , vector
   -- hs-source-dirs:      
   default-language:    Haskell2010
